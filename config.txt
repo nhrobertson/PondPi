@@ -1,0 +1,16 @@
+[OutputTimers]
+output_1_on=07:30 AM
+output_1_off=09:45 PM
+output_1_days=Monday,Wednesday,Friday
+
+output_2_on=10:00 AM
+output_2_off=11:00 AM
+output_2_days=Tuesday,Thursday
+
+output_3_on=12:00 PM
+output_3_off=1:00 PM
+output_3_days=Monday,Wednesday
+
+[WaterSensor]
+threshold_time=10
+fill_overflow_time=30

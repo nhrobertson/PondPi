@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Control Panel</title>
+    <style>
+        /* (Your existing CSS styles) */
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f5;
+            padding: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        .output-section, .input-section {
+            background-color: #fff;
+            border: 2px solid #ccc;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        .output-section h2, .input-section h2 {
+            color: #555;
+        }
+        .output-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .output-controls label {
+            font-size: 1.2em;
+        }
+        .time-inputs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .time-inputs label {
+            width: 100%;
+        }
+        .time-inputs input {
+            width: 50px;
+            padding: 5px;
+            font-size: 1em;
+            text-align: center;
+        }
+        .time-inputs select {
+            padding: 5px;
+            font-size: 1em;
+        }
+        .days-of-week {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .days-of-week label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            width: 80px;
+        }
+        .enable-button, .disable-button, .submit-button {
+            width: 150px;
+            padding: 10px;
+            font-size: 1em;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .enable-button {
+            background-color: #5cb85c;
+        }
+        .disable-button {
+            background-color: #d9534f;
+        }
+        .submit-button {
+            background-color: #0275d8;
+        }
+        .current-setting {
+            font-size: 1.1em;
+            color: #333;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Control Panel</h1>
+
+    <!-- Output 1 Section -->
+    <div class="output-section">
+        <h2>Output 1</h2>
+        <div class="output-controls">
+            <!-- Enable/Disable Buttons -->
+            <div>
+                <form action="/enable_output1">
+                    <button type="submit" class="enable-button">Enable</button>
+                </form>
+                <form action="/disable_output1">
+                    <button type="submit" class="disable-button">Disable</button>
+                </form>
+            </div>
+
+            <!-- Time Settings Form -->
+            <form action="/set_output1_times">
+                <!-- On Time Settings -->
+                <div class="time-inputs">
+                    <label>On Time:</label>
+                    <input type="number" name="on-hours" min="1" max="12" placeholder="HH"> :
+                    <input type="number" name="on-minutes" min="0" max="59" placeholder="MM">
+                    <select name="on-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <!-- Off Time Settings -->
+                <div class="time-inputs">
+                    <label>Off Time:</label>
+                    <input type="number" name="off-hours" min="1" max="12" placeholder="HH"> :
+                    <input type="number" name="off-minutes" min="0" max="59" placeholder="MM">
+                    <select name="off-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <!-- Days of the Week -->
+                <div class="days-of-week">
+                    <label><input type="checkbox" name="days" value="Monday"> Mon</label>
+                    <label><input type="checkbox" name="days" value="Tuesday"> Tue</label>
+                    <label><input type="checkbox" name="days" value="Wednesday"> Wed</label>
+                    <label><input type="checkbox" name="days" value="Thursday"> Thu</label>
+                    <label><input type="checkbox" name="days" value="Friday"> Fri</label>
+                    <label><input type="checkbox" name="days" value="Saturday"> Sat</label>
+                    <label><input type="checkbox" name="days" value="Sunday"> Sun</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-button">Set Times</button>
+            </form>
+
+            <!-- Current Settings Display -->
+            <div class="current-setting">
+                Current On Time: {CURRENT_ON_TIME_1}
+            </div>
+            <div class="current-setting">
+                Current Off Time: {CURRENT_OFF_TIME_1}
+            </div>
+            <div class="current-setting">
+                Current State: {STATE_1}
+            </div>
+        </div>
+    </div>
+
+    <!-- Output 2 Section -->
+    <div class="output-section">
+        <h2>Output 2</h2>
+        <div class="output-controls">
+            <!-- Enable/Disable Buttons -->
+            <div>
+                <form action="/enable_output2">
+                    <button type="submit" class="enable-button">Enable</button>
+                </form>
+                <form action="/disable_output2">
+                    <button type="submit" class="disable-button">Disable</button>
+                </form>
+            </div>
+
+            <!-- Time Settings Form -->
+            <form action="/set_output2_times">
+                <!-- On Time Settings -->
+                <div class="time-inputs">
+                    <label>On Time:</label>
+                    <input type="number" name="on-hours" min="1" max="12" placeholder="HH"> :
+                    <input type="number" name="on-minutes" min="0" max="59" placeholder="MM">
+                    <select name="on-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <!-- Off Time Settings -->
+                <div class="time-inputs">
+                    <label>Off Time:</label>
+                    <input type="number" name="off-hours" min="1" max="12" placeholder="HH"> :
+                    <input type="number" name="off-minutes" min="0" max="59" placeholder="MM">
+                    <select name="off-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <!-- Days of the Week -->
+                <div class="days-of-week">
+                    <label><input type="checkbox" name="days" value="Monday"> Mon</label>
+                    <label><input type="checkbox" name="days" value="Tuesday"> Tue</label>
+                    <label><input type="checkbox" name="days" value="Wednesday"> Wed</label>
+                    <label><input type="checkbox" name="days" value="Thursday"> Thu</label>
+                    <label><input type="checkbox" name="days" value="Friday"> Fri</label>
+                    <label><input type="checkbox" name="days" value="Saturday"> Sat</label>
+                    <label><input type="checkbox" name="days" value="Sunday"> Sun</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-button">Set Times</button>
+            </form>
+
+            <!-- Current Settings Display -->
+            <div class="current-setting">
+                Current On Time: {CURRENT_ON_TIME_2}
+            </div>
+            <div class="current-setting">
+                Current Off Time: {CURRENT_OFF_TIME_2}
+            </div>
+            <div class="current-setting">
+                Current State: {STATE_2}
+            </div>
+        </div>
+    </div>
+
+    <!-- Output 3 Section -->
+    <div class="output-section">
+        <h2>Output 3</h2>
+        <div class="output-controls">
+            <!-- Enable/Disable Buttons -->
+            <div>
+                <form action="/enable_output3">
+                    <button type="submit" class="enable-button">Enable Output 3</button>
+                </form>
+                <form action="/disable_output3">
+                    <button type="submit" class="disable-button">Disable Output 3</button>
+                </form>
+            </div>
+
+            <!-- Time Settings Form -->
+            <form action="/set_output3_times">
+                <!-- On Time Settings -->
+                <div class="time-inputs">
+                    <label>On Time:</label>
+                    <input type="number" name="on-hours" min="1" max="12" placeholder="HH"> :
+                    <input type="number" name="on-minutes" min="0" max="59" placeholder="MM">
+                    <select name="on-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <!-- Off Time Settings -->
+                <div class="time-inputs">
+                    <label>Off Time:</label>
+                    <input type="number" name="off-hours" min="1" max="12" placeholder="HH"> :
+                    <input type="number" name="off-minutes" min="0" max="59" placeholder="MM">
+                    <select name="off-ampm">
+                        <option value="AM">AM</option>
+                        <option value="PM">PM</option>
+                    </select>
+                </div>
+
+                <!-- Days of the Week -->
+                <div class="days-of-week">
+                    <label><input type="checkbox" name="days" value="Monday"> Mon</label>
+                    <label><input type="checkbox" name="days" value="Tuesday"> Tue</label>
+                    <label><input type="checkbox" name="days" value="Wednesday"> Wed</label>
+                    <label><input type="checkbox" name="days" value="Thursday"> Thu</label>
+                    <label><input type="checkbox" name="days" value="Friday"> Fri</label>
+                    <label><input type="checkbox" name="days" value="Saturday"> Sat</label>
+                    <label><input type="checkbox" name="days" value="Sunday"> Sun</label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="submit-button">Set Times</button>
+            </form>
+
+            <!-- Current Settings Display -->
+            <div class="current-setting">
+                Current On Time: {CURRENT_ON_TIME_3}
+            </div>
+            <div class="current-setting">
+                Current Off Time: {CURRENT_OFF_TIME_3}
+            </div>
+            <div class="current-setting">
+                Current State: {STATE_3}
+            </div>
+        </div>
+    </div>
+
+    <!-- Input 1 Section -->
+    <div class="input-section">
+        <h2>Input 1 Configuration</h2>
+        <div class="output-controls">
+            <!-- Threshold Time Configuration Form -->
+            <form action="/set_input1_threshold">
+                <div class="time-inputs">
+                    <label for="threshold-time">Threshold Time (Minutes):</label>
+                    <input type="number" id="threshold-time" name="threshold-time" min="0">
+                </div>
+                <button type="submit" class="submit-button">Set Threshold</button>
+            </form>
+
+            <!-- Water Fill Extended Time Configuration Form -->
+            <form action="/set_input1_water_fill_time">
+                <div class="time-inputs">
+                    <label for="water-fill-time">Water Fill Extended Time (Minutes):</label>
+                    <input type="number" id="water-fill-time" name="water-fill-time" min="0">
+                </div>
+                <button type="submit" class="submit-button">Set Water Fill Time</button>
+            </form>
+        </div>
+    </div>
+
+</body>
+</html>
