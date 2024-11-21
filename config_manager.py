@@ -25,6 +25,7 @@ def read_config(file_path="config.txt"):
 
 def write_config(config, file_path="config.txt"):
     try:
+        print("Writing to Config")
         with open(file_path, "w") as file:
             for section, pairs in config.items():
                 file.write(f"[{section}]\n")
@@ -90,7 +91,17 @@ def initialize_timers_from_config(file_path="config.txt"):
                 off_hour = off_hour if off_ampm == "AM" else (off_hour % 12) + 12
 
                 # Parse days
-                days_of_week = [day.strip() for day in days.split(",")]
+                day_to_number = {
+                    "Monday": 0,
+                    "Tuesday": 1,
+                    "Wednesday": 2,
+                    "Thursday": 3,
+                    "Friday": 4,
+                    "Saturday": 5,
+                    "Sunday": 6
+                }
+                
+                days_of_week = [day_to_number[day.strip()] for day in days.split(",")]
 
                 # Create and configure timers
                 on_timer = Timer(hour=on_hour, minute=on_minute, days_of_week=days_of_week)

@@ -18,11 +18,20 @@ OUT1 = LED(3) #RED
 OUT2 = LED(4) #BLUE
 OUT3 = LED(5) #YELLOW
 
+#Timers
+timers = {}
 
 
 """
 Functions
 """
+
+def intialize_timers():
+    global timers
+    timers = config_manager.initialize_timers_from_config("config.txt")
+    for on_timer, off_timer, output in timers:
+        asyncio.create_task(on_timer.start(handle_output_from_timer, output, True))
+        asyncio.create_task(off_timer.start(handle_output_from_timer, output, False))
 
 # Async function to monitor the button
 async def monitor_button():
@@ -44,9 +53,9 @@ def all_outputs_toggle():
 def enable_output(num):
     if (num == 1):
         OUT1.on()
-    if (num == 2):
+    elif (num == 2):
         OUT2.on()
-    if (num == 3):
+    elif (num == 3):
         OUT3.on()
     else:
         print("Error in enable_output")
@@ -54,32 +63,34 @@ def enable_output(num):
 def disable_output(num):
     if (num == 1):
         OUT1.off()
-    if (num == 2):
+    elif (num == 2):
         OUT2.off()
-    if (num == 3):
+    elif (num == 3):
         OUT3.off()
     else:
         print("Error in disable_output")
 
 def set_output_times(output, on_time, off_time, days):
-    print("-------Output From Set Times-------")
-    print("Output:")
-    print(output)
-    print("On Time:")
-    print(on_time)
-    print("Off Time:")
-    print(off_time)
-    print("Days:")
-    print(days)
-    if (output == 1):
-        print("Set Time 1")
-    if (output == 2):
-        print("Set Time 2")
-    if (output == 3):
-        print("Set Time 3")
-    else:
-        print("Error in set_output_times")
-
+    index = output - 1
+    day_to_number = {
+        "Monday": 0,
+        "Tuesday": 1,
+        "Wednesday": 2,
+        "Thursday": 3,
+        "Friday": 4,
+        "Saturday": 5,
+        "Sunday": 6
+    }
+    days_of_week = [day_to_number[day] for day in days] 
+    
+    selected_timer_on, selected_timer_off, _ = timers[index]
+    
+    selected_timer_on.set_time(*on_time)
+    selected_timer_on.set_days_of_week(days_of_week)
+    
+    selected_timer_off.set_time(*off_time)
+    selected_timer_off.set_days_of_week(days_of_week)
+    
 def set_water_sensor_threshold(threshold_time):
     print("Threshold Time: " + threshold_time)
 
@@ -87,7 +98,10 @@ def set_water_sensor_fill_overflow(overflow_time):
     print("Water Fill Overflow Time: " + overflow_time)
 
 async def handle_output_from_timer(output, state):
-    print("TODO")
+    if (state):
+        enable_output(output)
+    else:
+        disable_output(output)
 
 async def update_timer(output, on_time, off_time, days):
     # Update configuration

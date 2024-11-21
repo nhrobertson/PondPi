@@ -28,7 +28,7 @@ storage file to store the settings of the contoller.
 import network #Network is needed for intializing the wireless connection
 import uasyncio as asyncio #Used to create a asyncrounous server
 from network_util import connect_wifi, handle_client, load_html
-from hw_util import monitor_button, handle_output_from_timer
+from hw_util import monitor_button, handle_output_from_timer, intialize_timers
 from timer import Timer
 import time
 import config_manager
@@ -51,13 +51,8 @@ Functions
 """
 
 async def main():
-    timers = config_manager.initialize_timers_from_config("config.txt")
-
-    for on_timer, off_timer, output in timers:
-        asyncio.create_task(on_timer.start(handle_output_from_timer, output, True))
-        asyncio.create_task(off_timer.start(handle_output_from_timer, output, False))
-
     #Setup timers that are linked to the hardware (timers should be accessable in hw_util)
+    intialize_timers()
 
     load_html()
     ip = await connect_wifi()

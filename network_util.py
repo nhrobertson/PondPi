@@ -4,7 +4,7 @@
 import network #Network is needed for intializing the wireless connection
 import uasyncio as asyncio #Used to create a asyncrounous server
 import hw_util
-
+import config_manager
 
 """
 Variable definitions
@@ -210,7 +210,10 @@ async def handle_set_output_times(writer, params, output_number):
     # Ensure 'days' is always a list
     if not isinstance(days, list):
         days = [days]
-
+    
+    # Set Config
+    
+    
     # Convert hours and minutes to integers
     try:
         on_hours = int(on_hours)
@@ -248,6 +251,16 @@ async def handle_set_output_times(writer, params, output_number):
         output=output_number,
         on_time=(on_hours, on_minutes),
         off_time=(off_hours, off_minutes),
+        days=days
+    )
+    
+    on_time = f"{params.get('on-hours', '0')}:{params.get('on-minutes', '0')} {params.get('on-ampm', 'AM')}"
+    off_time = f"{params.get('off-hours', '0')}:{params.get('off-minutes', '0')} {params.get('off-ampm', 'AM')}"
+    
+    config_manager.update_output_timer(
+        output=output_number,
+        on_time=on_time,
+        off_time=off_time,
         days=days
     )
     #print(f"Output {output_number} times set to on: {on_hours}:{on_minutes}, "f"off: {off_hours}:{off_minutes} on days {days}")
