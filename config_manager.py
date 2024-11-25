@@ -116,4 +116,14 @@ def initialize_timers_from_config(file_path="config.txt"):
     
     return timers
 
+def intialize_float_sensor(file_path="config.txt"):
+    config = read_config(file_path)
+    water_sensor_config = config.get("WaterSensor", None)
+    if not water_sensor_config:
+        print("Error: Missing [WaterSensor] section in config file.")
+        return _, _
+    threshold = water_sensor_config.get("threshold_time")
+    overflow = water_sensor_config.get("fill_overflow_time")
+    return threshold, overflow
+
 

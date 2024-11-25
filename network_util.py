@@ -49,18 +49,34 @@ async def connect_wifi():
     print(f'Connected! IP: {ip}')
     return ip
 
-# HTML page generator
 def generate_webpage():
     """
     Modify the HTML Content for updates
     """
     global html_content
-    page_content = html_content
-    #for i in range(1, 4):  # Adjust the range if you have more outputs
-    #    page_content = page_content.replace(f'{{CURRENT_ON_TIME_{i}}}', get_current_on_time(i))
-    #    page_content = page_content.replace(f'{{CURRENT_OFF_TIME_{i}}}', get_current_off_time(i))
-    #    page_content = page_content.replace(f'{{STATE_{i}}}', get_state(i))
-    return page_content
+    try:
+        page_content = html_content
+        output_values = []
+
+        # Gather all replacements to reduce intermediate memory use
+        #for i in range(1, 4):  # Adjust the range if you have more outputs
+        #    output_values.append({
+        #        f'{{CURRENT_ON_TIME_{i}}}': hw_util.get_current_on_time(i),
+        #        f'{{CURRENT_OFF_TIME_{i}}}': hw_util.get_current_off_time(i),
+        #        f'{{STATE_{i}}}': hw_util.get_current_state(i),
+        #    })
+
+        # Perform replacements
+        #for replacements in output_values:
+        #    for placeholder, value in replacements.items():
+        #        page_content = page_content.replace(placeholder, value)
+
+        return page_content
+
+    except MemoryError:
+        # Handle low-memory situations gracefully
+        print("MemoryError: Unable to allocate memory for webpage generation.")
+        return "Error: Page generation failed due to low memory. Try reloading the page"
 
 async def handle_client(reader, writer):
     # Read the request line
