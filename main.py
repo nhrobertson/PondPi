@@ -28,7 +28,7 @@ storage file to store the settings of the contoller.
 import network #Network is needed for intializing the wireless connection
 import uasyncio as asyncio #Used to create a asyncrounous server
 from network_util import connect_wifi, handle_client, load_html
-from hw_util import monitor_float_sensor, handle_output_from_timer, intialize_timers
+from hw_util import monitor_float_sensor, handle_output_from_timer, intialize_timers, monitor_leak
 from timer import Timer
 import time
 import config_manager
@@ -53,6 +53,7 @@ async def main():
     print(f"Server running on http://{ip}:80")
     
     asyncio.create_task(monitor_float_sensor())
+    asyncio.create_task(monitor_leak())
     #TODO
     #Create Task to Monitor Physical Inputs which Output to Pumps amd Water Fill
     #Those Physcial Functions will need to call control functions that use the timer

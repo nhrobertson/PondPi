@@ -28,6 +28,14 @@ def load_html():
     except Exception as e:
         print(f"Error reading index.html: {e}")
         html_content = "<html><body><h1>Error loading page</h1></body></html>"
+        
+def load_config_webpage():
+    try:
+        with open('config.txt', 'r') as file:
+            return file.read()
+    except Exception as e:
+        print(f"Error reading config.txt for webpage: {e}")
+        return "<html>Error</html>"
 
 async def connect_wifi():
     """"""""""""""""""""
@@ -49,29 +57,18 @@ async def connect_wifi():
     print(f'Connected! IP: {ip}')
     return ip
 
-def generate_webpage():
+def generate_webpage(show_config):
     """
     Modify the HTML Content for updates
     """
     global html_content
     try:
-        page_content = html_content
-        output_values = []
-
-        # Gather all replacements to reduce intermediate memory use
-        #for i in range(1, 4):  # Adjust the range if you have more outputs
-        #    output_values.append({
-        #        f'{{CURRENT_ON_TIME_{i}}}': hw_util.get_current_on_time(i),
-        #        f'{{CURRENT_OFF_TIME_{i}}}': hw_util.get_current_off_time(i),
-        #        f'{{STATE_{i}}}': hw_util.get_current_state(i),
-        #    })
-
-        # Perform replacements
-        #for replacements in output_values:
-        #    for placeholder, value in replacements.items():
-        #        page_content = page_content.replace(placeholder, value)
-
-        return page_content
+        if not (show_config):
+            page_content = html_content
+            return page_content
+        else:
+            page_content = load_config_webpage()
+            return f"<html><pre>{page_content}</pre></html>"
 
     except MemoryError:
         # Handle low-memory situations gracefully
@@ -124,6 +121,8 @@ async def handle_client(reader, writer):
     print(f"Method: {method}")
     print(f"Path: {path}")
     print(f"Parameters: {params}")
+    
+    show_config = False
 
     # Handle the request based on the path
     if path == "/enable_output1":
@@ -154,12 +153,15 @@ async def handle_client(reader, writer):
         await handle_set_input1_threshold(writer, params)
     elif path == "/set_input1_water_fill_time":
         await handle_set_input1_water_fill_time(writer, params)
+    elif path == "/show_config":
+        show_config = True
     else:
         print(f"Unknown request path: {path}")
 
     # Generate the webpage
-    response = generate_webpage()
-
+    response = generate_webpage(show_config)
+    show_config = False
+    
     # Send the HTTP response
     writer.write("HTTP/1.0 200 OK\r\nContent-Type: text/html\r\n\r\n")
     writer.write(response)

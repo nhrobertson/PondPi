@@ -31,11 +31,31 @@ out3_state = False
 threshold_time = -1
 overflow_time = -1
 
+#Leak Prevention
+water_fill_count = 0
+leak_detected = False
 
 
 """
 Functions
 """
+
+async def monitor_leak():
+    global water_fill_count, leak_detected
+    last_reset_time = time.time()
+    while True:
+        current_time = time.time()
+        if (current_time - last_reset_time >= 86400):
+            water_fill_count = 0
+        if (water_fill_count > 3):
+            OUT1.off()
+            OUT2.off()
+            OUT3.off()
+            leak_detected = True
+            print("Water Fill Count for today is greater than 3, Leak Detected")
+        await asyncio.sleep(0.1)
+            
+
 
 def intialize_timers():
     global timers, threshold_time, overflow_time
@@ -51,7 +71,7 @@ async def monitor_float_sensor():
     """
     Monitors the float sensor and manages OUT3 based on the input signal and timers.
     """
-    global out3_state, threshold_time, overflow_time, sensor
+    global out3_state, threshold_time, overflow_time, sensor, water_fill_count
     timer_started = False
     timer_start_time = None
 
@@ -66,6 +86,7 @@ async def monitor_float_sensor():
             elapsed_time = (time.time() - timer_start_time) / 60  # Convert seconds to minutes
             if elapsed_time >= threshold_time and not out3_state:
                 enable_output(3)  # Turn on OUT3
+                water_fill_count += 1
                 print("Threshold time reached. OUT3 enabled.")
 
         else:  # Input signal not detected
@@ -85,7 +106,9 @@ def all_outputs_toggle():
     OUT3.toggle()
     
 def enable_output(num):
-    global out1_state, out2_state, out3_state
+    global out1_state, out2_state, out3_state, water_fill_count
+    if (leak_detected):
+        return
     if (num == 1):
         OUT1.on()
         out1_state = True
@@ -147,69 +170,3 @@ async def handle_output_from_timer(output, state):
         enable_output(output)
     else:
         disable_output(output)
-
-def get_current_on_time(num):
-    index = num - 1
-    selected_timer_on, selected_timer_off, _ = timers[index]
-    timer_on_hour = selected_timer_on.hour
-    timer_on_minute = selected_timer_on.minute
-    days = selected_timer_on.days_of_week
-    
-    num_to_days = {
-        0 : "M",
-        1 : "T",
-        2 : "W",
-        3 : "TH",
-        4 : "F",
-        5 : "SAT",
-        6 : "SUN"
-    }
-    
-    timer_on_days = [num_to_days[day] for day in days]
-    
-    if (timer_on_minute < 10):
-        timer_on_minute = f"0{timer_on_minute}"
-    
-    return f"{timer_on_hour}:{timer_on_minute}, {timer_on_days}"
-
-def get_current_off_time(num):
-    index = num - 1
-    selected_timer_on, selected_timer_off, _ = timers[index]
-    timer_off_hour = selected_timer_off.hour
-    timer_off_minute = selected_timer_off.minute
-    days = selected_timer_off.days_of_week
-    
-    num_to_days = {
-        0 : "M",
-        1 : "T",
-        2 : "W",
-        3 : "TH",
-        4 : "F",
-        5 : "SAT",
-        6 : "SUN"
-    }
-    
-    timer_off_days = [num_to_days[day] for day in days]
-    
-    if (timer_off_minute < 10):
-        timer_off_minute = f"0{timer_off_minute}"
-    
-    return f"{timer_off_hour}:{timer_off_minute}, {timer_off_days}"
-
-def get_current_state(num):
-    if (num == 1):
-        if (out1_state):
-            return "ON"
-        else:
-            return "OFF"
-    if (num == 2):
-        if (out2_state):
-            return "ON"
-        else:
-            return "OFF"
-    if (num == 3):
-        if (out3_state):
-            return "ON"
-        else:
-            return "OFF"
-

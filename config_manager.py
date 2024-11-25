@@ -111,6 +111,12 @@ def initialize_timers_from_config(file_path="config.txt"):
                 timers.append((on_timer, off_timer, output))
             except Exception as e:
                 print(f"Error parsing timer for output {output}: {e}")
+        elif (on_time and off_time):
+            on_timer = Timer(hour=on_hour, minute=on_minute, days_of_week=None)
+            off_timer = Timer(hour=off_hour, minute=off_minute, days_of_week=None)
+            
+            # Add to the list of timers
+            timers.append((on_timer, off_timer, output))
         else:
             print(f"Warning: Missing configuration for output {output}")
     
