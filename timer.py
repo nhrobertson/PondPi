@@ -1,7 +1,16 @@
+#Timer Class
+
+#imports
 import uasyncio as asyncio
 import time
 
 class Timer:
+    """
+    Timer
+
+    A simple Timer class which allows for the creation of timers which call an action when started at a specific time, day, and optinally date. Every 60 seconds will check if the timer's
+    hour, minute, and day are equal to time.localtime() and if so, call the function inputed.
+    """
     def __init__(self, hour=0, minute=0, days_of_week=None, date=None, repeat=True):
         """
         Initialize the Timer with customizable configurations.

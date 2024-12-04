@@ -13,14 +13,21 @@ Variable definitions
 ssid = ''
 password = ''
 
-#Other Variables
+#Stores the webpage HTML
 html_content = ""
 
 """
 Functions
 """
 
+
 def load_html():
+    """
+    Network Utility: 
+    load_html
+
+    Opens up index.html and stores the html into memory.
+    """
     global html_content
     try:
         with open('index.html', 'r') as file:
@@ -30,6 +37,12 @@ def load_html():
         html_content = "<html><body><h1>Error loading page</h1></body></html>"
         
 def load_config_webpage():
+    """
+    Network Utility:
+    load_config_webpage
+
+    Opens up the config.txt to be displayed for a webpage.
+    """
     try:
         with open('config.txt', 'r') as file:
             return file.read()
@@ -38,12 +51,13 @@ def load_config_webpage():
         return "<html>Error</html>"
 
 async def connect_wifi():
-    """"""""""""""""""""
-    "   connect_wifi   "
-    "                  "
-    " Async Function to"
-    " connect to WIFI  "
-    """"""""""""""""""""
+    """
+    Network Utility:
+    connect_wifi
+
+    Using the SSID and Password statically inputed, connects the device to the wireless local network.
+    Async function so it doesn't stall the device. 
+    """
     wlan = network.WLAN(network.STA_IF)
     wlan.active(True)
     wlan.connect(ssid, password)
@@ -51,7 +65,7 @@ async def connect_wifi():
     # Wait for the connection to establish
     while not wlan.isconnected():
         print('Connecting to WiFi...')
-        await asyncio.sleep(1)  # Non-blocking wait for connection
+        await asyncio.sleep(1)
     
     ip = wlan.ifconfig()[0]
     print(f'Connected! IP: {ip}')
@@ -59,7 +73,12 @@ async def connect_wifi():
 
 def generate_webpage(show_config):
     """
-    Modify the HTML Content for updates
+    Network Utility:
+    generate_webpage(show_config)
+
+    Used to generate the webpage for the user.
+
+    :param show_config: Boolean for if we are showing the config or not
     """
     global html_content
     try:
@@ -76,10 +95,19 @@ def generate_webpage(show_config):
         return "Error: Page generation failed due to low memory. Try reloading the page"
 
 async def handle_client(reader, writer):
-    # Read the request line
+    """
+    Network Utility:
+    handle_client(reader, writer)
+
+    Main async function that is used to monitor clients. Will also process requests based on URL params.
+
+    :param reader: Reader
+    :param writer: Writer
+    """
+    # Read the request line using UTF-8
     request_line = await reader.readline()
     request_line = request_line.decode('utf-8').strip()
-    print(f"Request: {request_line}")
+    print("Client Request")
 
     # Read headers and store them in a dictionary
     headers = {}
@@ -117,11 +145,7 @@ async def handle_client(reader, writer):
         params = parse_query_string(body.decode('utf-8'))
     else:
         params = {}
-
-    print(f"Method: {method}")
-    print(f"Path: {path}")
-    print(f"Parameters: {params}")
-    
+     
     show_config = False
 
     # Handle the request based on the path
@@ -171,8 +195,13 @@ async def handle_client(reader, writer):
 
 def parse_query_string(query_string):
     """
+    Network Utility:
+    parse_query_string(query_string)
+
     Parse the query string or body into a dictionary.
     Handles URL decoding and multiple parameters with the same key.
+
+    :param query_string: query string to be parsed.
     """
     params = {}
     if query_string:
@@ -194,15 +223,26 @@ def parse_query_string(query_string):
 
 def url_decode(s):
     """
+    Network Utility:
+    url_decode(s)
+
     Decode a URL-encoded string.
+
+    :param s: string to decode
     """
-    import ure as re  # Use 'ure' for MicroPython
+    import ure as re
     hex_pattern = re.compile('%([0-9A-Fa-f]{2})')
     return hex_pattern.sub(lambda m: chr(int(m.group(1), 16)), s.replace('+', ' '))
 
 def convert_to_24h(hours, ampm):
     """
-    Convert 12-hour time to 24-hour time.
+    Network Utility:
+    convert_to_24h
+
+    Convert 12-hour time to 24-hour time for the timers.
+
+    :param hours: Hours
+    :param ampm: For AM or PM
     """
     if ampm.upper() == 'PM' and hours != 12:
         hours += 12
@@ -212,11 +252,17 @@ def convert_to_24h(hours, ampm):
 
 async def handle_set_output_times(writer, params, output_number):
     """
-    Handle setting the on/off times and days for an output.
-    """
-    print(f"Setting Output {output_number} Times")
+    Network Utility:
+    handle_set_output_times(writer, params, output_number)
 
-    # Extract parameters with default values
+    Handle setting the on/off times and days for an output. Sets the Timers using hw_util and sets the config using config manager.
+
+    :param params: Input Paramaters
+    :param output_number: Selected Output
+    """
+    print(f"Setting Output {output_number} Time Variables")
+
+    # Extract parameters with default values if not found
     on_hours = params.get('on-hours', '0')
     on_minutes = params.get('on-minutes', '0')
     on_ampm = params.get('on-ampm', 'AM')
@@ -225,14 +271,12 @@ async def handle_set_output_times(writer, params, output_number):
     off_ampm = params.get('off-ampm', 'AM')
     days = params.get('days', [])
 
-    # Ensure 'days' is always a list
+    # Ensure 'days' is always a list for ease
     if not isinstance(days, list):
         days = [days]
     
-    # Set Config
     
-    
-    # Convert hours and minutes to integers
+    # Convert hours and minutes to integers for Timer
     try:
         on_hours = int(on_hours)
         on_minutes = int(on_minutes)
@@ -249,7 +293,7 @@ async def handle_set_output_times(writer, params, output_number):
         await writer.wait_closed()
         return
 
-    # Validate the time values
+    # Validate the time values for incase of user error
     if not (1 <= on_hours <= 12 and 0 <= on_minutes <= 59 and
             1 <= off_hours <= 12 and 0 <= off_minutes <= 59):
         print("Time values out of range")
@@ -260,11 +304,11 @@ async def handle_set_output_times(writer, params, output_number):
         await writer.wait_closed()
         return
 
-    # Convert to 24-hour format
+    # Convert to 24-hour format for Timer
     on_hours = convert_to_24h(on_hours, on_ampm)
     off_hours = convert_to_24h(off_hours, off_ampm)
 
-    # Set the output times using your hardware utility functions
+    # Set the actual running timer to new values to ensure correct functionality
     hw_util.set_output_times(
         output=output_number,
         on_time=(on_hours, on_minutes),
@@ -275,19 +319,25 @@ async def handle_set_output_times(writer, params, output_number):
     on_time = f"{params.get('on-hours', '0')}:{params.get('on-minutes', '0')} {params.get('on-ampm', 'AM')}"
     off_time = f"{params.get('off-hours', '0')}:{params.get('off-minutes', '0')} {params.get('off-ampm', 'AM')}"
     
+    # Set the config to the new times for use in User Display and Bootup.
     config_manager.update_output_timer(
         output=output_number,
         on_time=on_time,
         off_time=off_time,
         days=days
     )
-    #print(f"Output {output_number} times set to on: {on_hours}:{on_minutes}, "f"off: {off_hours}:{off_minutes} on days {days}")
 
 async def handle_set_input1_threshold(writer, params):
     """
+    Network Utility:
+    handle_set_input1_threshold(writer, params)
+
     Handle setting the threshold time for Input 1.
+
+    :param params: Input Paramaters
     """
     print("Setting Input 1 Threshold Time")
+    # Get the threshold time or set to 0 not found
     threshold_time = params.get('threshold-time', '0')
     try:
         threshold_time = int(threshold_time)
@@ -300,14 +350,21 @@ async def handle_set_input1_threshold(writer, params):
         await writer.wait_closed()
         return
 
+    # Sets the actual threshold time in the hw
     hw_util.set_water_sensor_threshold(threshold_time)
     print(f"Input 1 threshold time set to {threshold_time} minutes")
 
 async def handle_set_input1_water_fill_time(writer, params):
     """
+    Network Utility:
+    handle_set_input1_water_fill_time(writer, params)
+
     Handle setting the water fill extended time for Input 1.
+
+    :param params: Input Paramaters
     """
     print("Setting Input 1 Water Fill Extended Time")
+    # Get water fill from parameters if found or 0 if otherwise
     water_fill_time = params.get('water-fill-time', '0')
     try:
         water_fill_time = int(water_fill_time)
@@ -320,5 +377,6 @@ async def handle_set_input1_water_fill_time(writer, params):
         await writer.wait_closed()
         return
 
+    # Sets the actual overflow time in the hw
     hw_util.set_water_sensor_fill_overflow(water_fill_time)
     print(f"Input 1 water fill extended time set to {water_fill_time} minutes")

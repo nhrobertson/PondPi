@@ -1,9 +1,13 @@
-import network #Network is needed for intializing the wireless connection
 import uasyncio as asyncio #Used to create a asyncrounous server
 from timer import Timer
-import time
 
 def read_config(file_path="config.txt"):
+    """
+    Config Manager:
+    read_config(file_path)
+
+    Used to read the config.txt file. Returns the config as a dictionary for easy access.
+    """
     config = {}
     try:
         with open(file_path, "r") as file:
@@ -24,6 +28,12 @@ def read_config(file_path="config.txt"):
 
 
 def write_config(config, file_path="config.txt"):
+    """
+    Config Manager:
+    write_config(config, file_path)
+
+    Used to write to config.txt using the updated config dictonary.
+    """
     try:
         print("Writing to Config")
         with open(file_path, "w") as file:
@@ -37,12 +47,33 @@ def write_config(config, file_path="config.txt"):
 
 
 def update_config_section(config, section, key, value):
+    """
+    Config Manager:
+    update_config_section(config, section, key, value)
+
+    Used to update a specific section of the config dictionary.
+
+    :param section: section of the config
+    :param key: the key of what is being updated
+    :param value: the updated value
+    """
     if section not in config:
         config[section] = {}
     config[section][key] = value
 
 
 def update_output_timer(output, on_time, off_time, days, file_path="config.txt"):
+    """
+    Config Manager:
+    update_output_timer(output, on_time, off_time, days, file_path)
+
+    Used to update output's stored timer values.
+
+    :param output: the output number (1-3)
+    :param on_time: the new on time
+    :param off_time: the new off time
+    :param days: the new list of days
+    """
     config = read_config(file_path)
     section = "OutputTimers"
     update_config_section(config, section, f"output_{output}_on", on_time)
@@ -52,18 +83,37 @@ def update_output_timer(output, on_time, off_time, days, file_path="config.txt")
 
 
 def update_water_sensor_threshold(threshold_time, file_path="config.txt"):
+    """
+    Config Manager:
+    update_water_sensor_threshold(threshold_time, file_path)
+
+    Used to update the water sensor's stored threshold value
+    """
     config = read_config(file_path)
     update_config_section(config, "WaterSensor", "threshold_time", threshold_time)
     write_config(config, file_path)
 
 
 def update_water_sensor_overflow(overflow_time, file_path="config.txt"):
+    """
+    Config Manager:
+    update_water_sensor_overflow(overflow_time, file_path)
+
+    Used to update the water sensor's stored overflow time
+    """
     config = read_config(file_path)
     update_config_section(config, "WaterSensor", "fill_overflow_time", overflow_time)
     write_config(config, file_path)
 
 
 def initialize_timers_from_config(file_path="config.txt"):
+    """
+    Config Manager:
+    intialize_timers_from_config(file_path)
+
+    Reads the config then parses the data into a format acceptable for the Timer class.
+    Then creates a list of timers based on the parsed data.
+    """
     config = read_config(file_path)
     timers = []
     
@@ -73,7 +123,7 @@ def initialize_timers_from_config(file_path="config.txt"):
         print("Error: Missing [OutputTimers] section in config file.")
         return timers  # Return an empty list
 
-    for output in range(1, 4):  # Assuming 3 outputs
+    for output in range(1, 4):  # 3 outputs
         # Safely retrieve values
         on_time = output_timers.get(f"output_{output}_on")
         off_time = output_timers.get(f"output_{output}_off")
@@ -123,6 +173,12 @@ def initialize_timers_from_config(file_path="config.txt"):
     return timers
 
 def intialize_float_sensor(file_path="config.txt"):
+    """
+    Config Manager:
+    intialize_float_sensor(file_path)
+
+    Reads the config then returns the threshold and overflow times for the water sensor.
+    """
     config = read_config(file_path)
     water_sensor_config = config.get("WaterSensor", None)
     if not water_sensor_config:

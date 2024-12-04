@@ -1,15 +1,17 @@
-#Pond Fountain Controller
+#Pond Fountain Controller - Main
+#Created By Noah Robertson
 
 """
-The Pond Fountain Controller will be located away from the pond.
-We are targetting to be able to handle this through physical switches
-and local online ones.
+Pond Fountain Controller
+
+This simple Raspberry Pi Pico W controller was designed to control our backyard pond. The circuit will be displayed in
+the README.md and is using Solid State Relays (Not very practical) but we had some on hand. 
 
 Requirements:
     Inputs:
     - Float Switch
     
-    Output:
+    Outputs:
     - Pump 1
     - Pump 2
     - Water Fill
@@ -19,19 +21,16 @@ Requirements:
         - 24 Hour Adjustable
         - Date Controller
         
-I/O will need to be handled both locally and through the network where
-the timer is going to be controlled networkly. I am planning on using a
-storage file to store the settings of the contoller.
+I/O is handled through the timers and controlled through a local network. IP address and Port for your device will be displayed on start up.
+
+Please feel free to take and modify this - was fun little project :)
 """
 
 #imports
 import network #Network is needed for intializing the wireless connection
 import uasyncio as asyncio #Used to create a asyncrounous server
 from network_util import connect_wifi, handle_client, load_html
-from hw_util import monitor_float_sensor, handle_output_from_timer, intialize_timers, monitor_leak
-from timer import Timer
-import time
-import config_manager
+from hw_util import monitor_float_sensor, intialize_timers, monitor_leak
 
 """
 Variable definitions
@@ -42,21 +41,22 @@ Functions
 """
 
 async def main():
-    #Setup timers that are linked to the hardware (timers should be accessable in hw_util)
+    #Uses hw_util to set up the timers from config.txt to begin logic
     intialize_timers()
 
+    #Needed to get the webpage loaded
     load_html()
     ip = await connect_wifi()
     
+    #Setups up the server
     print("Setting up server")
     server = await asyncio.start_server(handle_client, ip, 80)
     print(f"Server running on http://{ip}:80")
-    
+
+    #Async tasks for monitoring hw inputs
     asyncio.create_task(monitor_float_sensor())
     asyncio.create_task(monitor_leak())
-    #TODO
-    #Create Task to Monitor Physical Inputs which Output to Pumps amd Water Fill
-    #Those Physcial Functions will need to call control functions that use the timer
+
     await server.wait_closed()
     
 try:
