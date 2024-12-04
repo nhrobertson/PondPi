@@ -68,7 +68,7 @@ Below is the circuit setup used for PondPi:
    Flash your Raspberry Pi Pico W with MicroPython. Instructions can be found [here](https://micropython.org/).
 
 2. **Upload the Code**  
-   Copy the `main.py` file to your Raspberry Pi Pico W using an IDE like Thonny.
+   Copy the `main.py` and all other files to your Raspberry Pi Pico W using an IDE like Thonny.
 
 3. **Connect the Hardware**  
    Wire the float switch, pumps, and water fill system to the Raspberry Pi Pico W GPIO pins through the Solid State Relays.
@@ -87,7 +87,7 @@ Below is the circuit setup used for PondPi:
 
 ## Contribution
 
-This project is open-source! Feel free to fork, modify, and contribute to the development of PondPi. Share your ideas and improvements with the community.
+This project is open-source! Feel free to fork, modify, and contribute to the development of PondPi. Share your ideas and improvements.
 
 ---
 
